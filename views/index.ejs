@@ -1,0 +1,33 @@
+<% include _header %>
+
+<h3>Were we let in for our looks? No. Will we be judged on them? Yes.</h3>
+<h2>Who's cuter? Click to choose.</h2>
+<center>
+    <% if(images) { %>
+        <table>
+            <tr>
+                <td valign="top" class="image"><a href="rate?winner=<%= images[0].image_id %>&loser=<%= images[1].image_id %>"><img src="images/<%= images[0].filename %>"></a></td>
+                <td><b>OR</b></td>
+                <td valign="top" class="image"><a href="rate?winner=<%= images[1].image_id %>&loser=<%= images[0].image_id %>"><img src="images/<%= images[1].filename %>"></a></td>
+            </tr>
+            <tr>
+                <td>Won: <%= images[0].wins %>, Lost: <%= images[0].losses %>, Score: <%= images[0].score %>, Expected: <%= expected(images[1].score, images[0].score) %></td>
+                <td></td>
+                <td>Won: <%= images[1].wins %>, Lost: <%= images[1].losses %>, Score: <%= images[1].score %>, Expected: <%= expected(images[0].score, images[1].score) %></td>
+            </tr>
+        </table>
+    <% } %>
+
+
+    <br/><br/><br/>
+    <h2>Top Rated</h2>
+    <table>
+        <tr>
+            <% topRatings.forEach(function (image) { %>
+                <td valign="top"><div class="top-images"><img src="images/<%= image.filename %>" width="85"></td>
+            <% }); %>
+        </tr>
+    </table>
+</center>
+
+<% include _footer %>
