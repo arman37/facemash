@@ -20,3 +20,7 @@ So i thought why not develop 'facemash' for the 2nd time with this custom built 
 Preview
 ========
 ![Screenshot](/screenshots/screenshot.png)
+
+### License
+
+[MIT licensed](./LICENSE)

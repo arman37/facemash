@@ -7,7 +7,7 @@
     "start": "node ./bin/www"
   },
   "author": "Arman Bhuiyan",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "arraywrap": "^1.0.0",
     "body-parser": "^1.15.2",
