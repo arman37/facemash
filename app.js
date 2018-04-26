@@ -1,29 +1,39 @@
 /**
- * Created by Arman on 15/2/2016.
+ *
+ * @author arman
+ * @since 15/2/2016.
+ *
  */
 'use strict';
 
-var express = require('express')
-    ,path = require('path')
-    ,logger = require('morgan')
-    ,bodyParser = require('body-parser')
-    ,mysqlConnector = require('./helpers/mysqlConnector')
-    ,responseModifier = require('./middlewares/responseModifier')
-    ,config = require('./config');
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+const dbConnector = require('./helpers/mysqlConnector');
+const responseModifier = require('./middlewares/responseModifier');
+let config = require('./config');
 
 
-var app = express();
-var env = app.get('env') == 'development' ? 'local' : app.get('env');
+const app = express();
+const env = app.get('env');
 
 config = config(env);
-mysqlConnector.connect(config.mysql);
+dbConnector.connect(config.mysql);
 
-require('./helpers/bootstrap').initApp(
+require('./helpers/bootstrap')
+  .initApp(
     app
     .set('views', path.resolve(__dirname, 'views'))
     .set('view engine', 'ejs')
     .use(logger('combined'))
     .use(bodyParser.urlencoded({extended: false}))
-    .use(responseModifier), express);
+    .use(responseModifier), express)
+  .then(() => {
+    console.info('Server started at localhost:3000');
+  })
+  .catch((err) => {
+    console.error('Oops!!! Something went wrong when initializing the app!');
+  });
 
 module.exports = app;

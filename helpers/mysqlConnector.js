@@ -1,13 +1,16 @@
 /**
- * Created by Arman on 15/2/2016.
+ *
+ * @author arman
+ * @since 15/2/2016.
+ *
  */
 'use strict';
 
 
-var globals = require('./globals');
-var Sequelize = require('sequelize');
+const globals = require('./globals');
+const Sequelize = require('sequelize');
 
-module.exports.connect = function (config) {
+module.exports.connect = (config) => {
   globals.sequelize = new Sequelize(config.database, config.user, config.password, {
       host: config.host,
       dialect: config.driver,
@@ -22,13 +25,12 @@ module.exports.connect = function (config) {
   globals
       .sequelize
       .authenticate()
-      .then(function (err) {
+      .then((err) => {
           console.log('Database Connection has been established successfully.');
       })
-      .catch(function (err) {
+      .catch((err) => {
          console.log('Unable to connect to the database: ', err);
       });
     
   return globals.sequelize;
-    
 };

@@ -1,81 +1,104 @@
 /**
- * Created by Arman on 15/2/2016.
+ *
+ * @author arman
+ * @since 15/2/2016.
+ *
  */
 'use strict';
 
-var fs = require('fs')
-    ,path = require('path')
-    ,globals = require('./globals')
-    ,Images = globals.importModel('Images');
+const fs = require('fs');
+const path = require('path');
+const globals = require('./globals');
+const Images = globals.importModel('Images');
 
-var initControllers = function (app) {
-    var route = null;
-    fs.readdirSync(path.resolve(__dirname, '../controllers')).forEach(function (file) {
-        if(file.substr(-3) === '.js') {
-            route = require('../controllers/' + file);
-            route.controller(app);
-        }
-    });
+let initControllers = (app) => {
+  let route = null;
+
+  fs.readdirSync(path.resolve(__dirname, '../controllers')).forEach((file) => {
+    if(file.substr(-3) === '.js') {
+      route = require('../controllers/' + file);
+      route.controller(app);
+    }
+  });
 };
 
-var initModels = function () {
-    loadModels();
+let initModels = () => {
+  loadModels();
+
+  return (
     globals
-        .sequelize
-        .sync({force: false})
-        .then(function () {
-            console.log('Finished database synchronization.');
-            installImages();
-        })
-        .catch(function (err) {
-            console.error('Error occurred during database synchronization:', err);
-        });
+      .sequelize
+      .sync({force: false})
+      .then(() => {
+        console.log('Finished database synchronization.');
+
+        return installImages();
+      })
+      .catch((err) => {
+        console.error('Error occurred during database synchronization:', err);
+      })
+  );
 };
 
-var loadModels = function () {
-    fs.readdirSync(path.resolve(__dirname, '../models')).forEach(function (file) {
-        if(file.substr(-3) === '.js') {
-            require('../models/' + file);
-            console.log('Finished loading model:', file);
-        }
-    });
+let loadModels = () => {
+  fs.readdirSync(path.resolve(__dirname, '../models')).forEach((file) => {
+    if(file.substr(-3) === '.js') {
+      require('../models/' + file);
+      console.log('Finished loading model:', file);
+    }
+  });
 };
 
-var installImages = function () {
-    var images = [];
-    fs.readdirSync(path.resolve(__dirname, '../public/images')).forEach(function (fileName, index) {
-        images[index] = {filename: fileName};
-    });
+let installImages = () => {
+  let images = [];
 
+  fs.readdirSync(path.resolve(__dirname, '../public/images')).forEach((fileName, index) => {
+    images[index] = {filename: fileName};
+  });
+
+  return (
     Images
-        .count()
-        .then(function (count) {
-            if(count === 0) {
-                Images
-                    .bulkCreate(images)
-                    .then(function () {
-                        console.log('Successfully finished installing your images.');
-                    })
-                    .catch(function (err) {
-                        console.error('Error occurred during image installation:', err);
-                    });
-            }
-        });
+      .count()
+      .then((count) => {
+        if(count === 0) {
+          return (
+            Images
+              .bulkCreate(images)
+              .then(() => {
+                console.log('Successfully finished installing your images.');
+              })
+              .catch((err) => {
+                console.error('Error occurred during image installation:', err);
+              })
+          );
+        }
+      })
+  );
 };
 
-var registerStaticResources = function (app, express) {
-    app.use(express.static(path.join(__dirname, '../public')));
+let registerStaticResources = (app, express) => {
+  app.use(express.static(path.join(__dirname, '../public')));
 };
 
-var register404 = function (app) {
-    app.use(function (req, res) {
-        res.render('404');
-    });
+let register404 = (app) => {
+  app.use((req, res) => {
+    res.render('404');
+  });
 };
 
-module.exports.initApp = function (app, express) {
-    initControllers(app);
-    initModels();
-    registerStaticResources(app, express);
-    register404(app);
+module.exports.initApp = (app, express) => {
+  return (
+    Promise
+      .resolve()
+      .then(initControllers.bind(null, app))
+      .then(initModels)
+      .then(registerStaticResources.bind(null, app, express))
+      .then(register404.bind(null, app))
+      .then(() => {
+        console.log('Successfully completed all bootstrapping jobs.')
+      })
+      .catch(() => {
+        console.error('Oops!!! Error occurred during bootstrapping.');
+      })
+  );
 };
