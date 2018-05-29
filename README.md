@@ -26,6 +26,9 @@ Preview
 ========
 ![Screenshot](/screenshots/screenshot.png)
 
+### Contributing
+If you like the project, shoot a :star2: and feel free to fork & send PR anytime.
+
 ### License
 
 [MIT licensed](./LICENSE)
